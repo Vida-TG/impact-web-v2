@@ -19,9 +19,9 @@ const Create = () => {
     }
 
     const { data, error } = await supabase
-      .from('recipes')
+      .from('smoothies')
       .insert([{ title, method, rating }])
-
+      .select()
     if (error) {
       console.log(error)
       setFormError('Please fill in all the fields correctly.')
