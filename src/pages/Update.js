@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import supabase from "../config/supabaseConfig"
 
 const Update = () => {
   const { id } = useParams()
@@ -8,7 +9,26 @@ const Update = () => {
   const [title, setTitle] = useState('')
   const [method, setMethod] = useState('')
   const [rating, setRating] = useState('')
+  const [formError, setFormError] = useState(null)
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !method || !rating){
+      setFormError("No field can be left empty");
+      return;
+    }
+    const { error } = await supabase
+      .from('smoothies')
+      .update({title: title, method: method, rating: rating})
+      .eq('id', id)
+    
+    if (error){
+      setFormError("Failed to update");
+    } else{
+      navigate('/')
+    }
+
+  }
   useEffect(() => {
     const fetchSmoothie = async () => {
       const { data, error } = await supabase
@@ -28,7 +48,8 @@ const Update = () => {
 
         }
     }
-  })
+    fetchSmoothie();
+  }, [])
   return (
     <div className="page update">
       <form onSubmit={handleSubmit}>
